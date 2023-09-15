@@ -1,6 +1,7 @@
 # Infrasight-Spring-Boot
 This is an Spring Boot microservice application that has provisions to connect through SSh and Grab server stats.
 
+# CPU and RAM
 ```bash
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -70,3 +71,43 @@ public class EnvironmentUpdateTask implements Runnable {
 	}
 }
 ```
+# Disc Utilization
+```bash
+public void saveDiscUtilization(Environment environment, List<String> datas) {
+
+//		log.error("{}) Taken: {}", environment.getEnvId(), !checkIfDataExists(environment.getEnvId(), LocalDate.now()));
+		if (!checkIfDataExists(environment.getEnvId(), LocalDate.now())) {
+			DiscUtilization newData = new DiscUtilization(environment);
+			DiscUtilization savedDiscUtilization = discRepo.save(newData);
+
+			Set<DiscMount> discMounts = new HashSet<>();
+			for (String data : datas) {
+				String[] lines = data.split("\n");
+				for (int i = 1; i < lines.length; i++) {
+					String line = lines[i];
+					String[] words = line.replaceAll("\\s{2,}", " ").split(" ");
+					if (words.length >= 6) {
+						String fileSystem = words[0];
+						String size = words[1];
+						String used = words[2];
+						String avail = words[3];
+						String use = words[4];
+						String mount = words[5];
+						DiscMount discMount = new DiscMount(fileSystem, size, used, avail, use, mount,
+								savedDiscUtilization);
+						DiscMount saved = discMountsRepo.save(discMount);
+						discMounts.add(saved);
+//						log.error("{} - {} - {} - {} - {} - {} - {} - {}", new Long(i), fileSystem, size, used, avail, use, mount, newData);	
+					}
+				}
+//				log.error("discMounts: {}", discMounts.size());
+			}
+//			List<DiscMount> savedDiscMount = discMountsRepo.saveAllAndFlush(discMounts);
+			newData.getDiscMounts().addAll(discMounts);
+//			log.error("===>{}", newData.toString());
+			discRepo.save(newData);
+		}
+
+	}
+```
+
