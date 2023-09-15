@@ -32,6 +32,8 @@ public class ServerEntity implements Serializable {
 	private String username;
 	
 	private String password;
+	
+	private Boolean isActive;
 		
 	private Set<StatsEntity> ramCPU = new HashSet<>();
 	

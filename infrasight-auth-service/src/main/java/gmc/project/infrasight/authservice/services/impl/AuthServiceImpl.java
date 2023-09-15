@@ -12,11 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import gmc.project.infrasight.authservice.dao.UserDao;
+import gmc.project.infrasight.authservice.daos.UserDao;
 import gmc.project.infrasight.authservice.entities.UserEntity;
-import gmc.project.blockchain.legalchain.authservice.models.UserModel;
-import gmc.project.blockchain.legalchain.authservice.services.AuthService;
-import gmc.project.blockchain.legalchain.authservice.services.BlockchainServiceFeignClient;
+import gmc.project.infrasight.authservice.models.UserModel;
+import gmc.project.infrasight.authservice.services.AuthService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,9 +30,6 @@ public class AuthServiceImpl implements AuthService {
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
-	@Autowired
-	private BlockchainServiceFeignClient blockchainService;
 	
 	private ModelMapper modelMapper = new ModelMapper();
 

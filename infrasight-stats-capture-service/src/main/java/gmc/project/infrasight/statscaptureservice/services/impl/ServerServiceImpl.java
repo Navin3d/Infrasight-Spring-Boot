@@ -40,4 +40,9 @@ public class ServerServiceImpl implements ServerService {
 		return serverDao.findAll();
 	}
 
+	@Override
+	public void save(ServerEntity serverEntity) {
+		serverDao.save(serverEntity);
+	}
+
 }

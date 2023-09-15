@@ -1,7 +1,10 @@
 package gmc.project.infrasight.statscaptureservice.services;
 
-import gmc.project.infrasight.statscaptureservice.entities.embedded.DiscStatsEntity;
+import java.util.List;
+
+import javax.management.ServiceNotFoundException;
 
 public interface StatsService {
-	public void storeDiscStat(DiscStatsEntity discEntity, String host);
+	public void storeDiscStat(String host, List<String> discLines) throws ServiceNotFoundException;
+	public void storeCPUAndRAM(String host, List<String> cpuLine, List<String> ramLine) throws ServiceNotFoundException;
 }

@@ -11,5 +11,7 @@ public interface ServerService {
 	public ServerEntity findOne(String uniqueId) throws ServiceNotFoundException ;
 	
 	public List<ServerEntity> findAll();
+	
+	public void save(ServerEntity serverEntity);
 
 }

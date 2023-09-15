@@ -10,8 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 
-import gmc.project.legalchain.authservice.filter.AuthFilter;
-import gmc.project.legalchain.authservice.services.AuthService;
+import gmc.project.infrasight.authservice.filter.AuthFilter;
+import gmc.project.infrasight.authservice.services.AuthService;
 
 @Component
 @Configuration
