@@ -1,0 +1,8 @@
+type DiscMount {
+	fileSystem: String
+    size: String
+    used: String
+    available: String
+    use: String
+    mountedOn: String
+}

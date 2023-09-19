@@ -1,0 +1,19 @@
+type Query {
+	servers(limit: Int = 10, page: Int = 0): [Server]
+	server(id: ID!, from: String, to: String): Server
+	
+	projects: [Project]
+	project(uniqueId: ID!): Project
+}
+
+
+type Server {
+    id: ID
+    name: String
+    description: String
+    host: String
+    isActive: Boolean
+    ramCPU: [Stats]
+    discStats: [DiscStats]
+    projects: [Project]
+}

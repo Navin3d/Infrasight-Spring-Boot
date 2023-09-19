@@ -1,0 +1,7 @@
+type Stats {
+    id: ID
+    availableRam: Int
+    totalRam: Int
+    cpuPerformance: Float
+    capturedAt: String
+}

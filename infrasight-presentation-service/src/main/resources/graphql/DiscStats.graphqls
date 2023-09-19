@@ -1,0 +1,5 @@
+type DiscStats {
+    id: ID
+    discMounts: [DiscMount]
+    capturedAt: String
+}
