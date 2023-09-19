@@ -15,12 +15,14 @@ public class UserModel implements Serializable {
 
 	private String name;
 
-	private String employeeId;
+	private Integer employeeId;
 
 	private String companyEmail;
 
 	private String username;
 	
+	private String passwordPlain;
+	
 	private Binary profilePic;
-
+	
 }

@@ -1,10 +1,14 @@
 package gmc.project.infrasight.authservice.services;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
+import java.io.IOException;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.multipart.MultipartFile;
+
+import gmc.project.infrasight.authservice.entities.UserEntity;
 import gmc.project.infrasight.authservice.models.UserModel;
 
 public interface AuthService extends UserDetailsService {
-	public UserModel findOneUser(String uniqueId);
-	public void createUser(UserModel userModel);
+	public UserEntity findOneUser(String uniqueId);
+	public UserModel createUser(UserModel userModel, MultipartFile profilePic) throws IOException;
 }
