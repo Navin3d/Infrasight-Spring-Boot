@@ -74,4 +74,14 @@ public class AuthServiceImpl implements AuthService {
 		return userModel;
 	}
 
+	@Override
+	public UserModel createUser(UserModel userModel) throws IOException {
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		UserEntity detachedUser = modelMapper.map(userModel, UserEntity.class);
+		detachedUser.setPassword(bCryptPasswordEncoder.encode(userModel.getPasswordPlain()));
+		UserEntity createdUser = userDao.insert(detachedUser);
+		userModel.setId(createdUser.getId());
+		return userModel;
+	}
+
 }

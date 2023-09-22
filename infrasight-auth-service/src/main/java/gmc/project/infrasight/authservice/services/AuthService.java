@@ -11,4 +11,5 @@ import gmc.project.infrasight.authservice.models.UserModel;
 public interface AuthService extends UserDetailsService {
 	public UserEntity findOneUser(String uniqueId);
 	public UserModel createUser(UserModel userModel, MultipartFile profilePic) throws IOException;
+	public UserModel createUser(UserModel userModel) throws IOException;
 }
