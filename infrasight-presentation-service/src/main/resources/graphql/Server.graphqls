@@ -1,5 +1,5 @@
 type Query {
-	servers(limit: Int = 10, page: Int = 0): [Server]
+	servers(limit: Int = 10, page: Int = 0, from: String, to: String): [Server]
 	server(id: ID!, from: String, to: String): Server
 	
 	projects: [Project]

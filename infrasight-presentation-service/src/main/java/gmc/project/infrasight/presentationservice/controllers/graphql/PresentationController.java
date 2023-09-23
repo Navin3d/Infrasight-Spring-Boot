@@ -18,8 +18,17 @@ public class PresentationController {
 	private ServerService serverService;
 
 	@QueryMapping
-	public List<ServerEntity> servers(@Argument Integer limit, @Argument Integer page) {
-		return serverService.findAll(page, limit);
+	public List<ServerEntity> servers(@Argument Integer limit, @Argument Integer page, @Argument String from,
+			@Argument String to) {
+		try {
+			if (from != null && to != null)
+				return serverService.findServersByDates(page, limit, from, to);
+			else
+				return serverService.findAll(page, limit);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return serverService.findAll(page, limit);
+		}
 	}
 
 	@QueryMapping

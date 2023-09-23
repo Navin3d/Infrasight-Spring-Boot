@@ -10,6 +10,7 @@ public interface ServerService {
 	public List<ServerEntity> findAll(Integer pageNo, Integer pageSize);
 	public ServerEntity save(ServerEntity server);
 	
+	public List<ServerEntity> findServersByDates(Integer pageNo, Integer pageSize, String from, String to);
 	public ServerEntity findByDateTime(String serverId, String from, String to) throws ServerNotActiveException;
 	public ServerEntity findByDateTime(String serverId, String to) throws ServerNotActiveException;
 }
