@@ -18,9 +18,7 @@ import gmc.project.infrasight.presentationservice.entities.embedded.DiscStatsEnt
 import gmc.project.infrasight.presentationservice.entities.embedded.StatsEntity;
 import gmc.project.infrasight.presentationservice.services.ServerService;
 import gmc.project.infrasight.presentationservice.utils.DateTimeUtil;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 public class ServerServiceImpl implements ServerService {
 	

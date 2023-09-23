@@ -40,8 +40,11 @@ public class StatsServiceImpl implements StatsService {
 			}
 			discStats.setDiscMounts(discMounts);
 			server.getDiscStats().add(discStats);
-			serverService.save(server);
+			server.setIsActive(true);
+		} else {
+			server.setIsActive(false);
 		}
+		serverService.save(server);
 	}
 
 	@Override
