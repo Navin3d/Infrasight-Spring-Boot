@@ -18,6 +18,7 @@ type Server {
     isActive: Boolean
     ramCPU: [Stats]
     discStats: [DiscStats]
+    ioStats: [IOStats]
     projects: [Project]
     serverAdmin: User
     serverUsers: [User]

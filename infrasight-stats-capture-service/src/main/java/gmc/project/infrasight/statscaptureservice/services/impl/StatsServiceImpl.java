@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import gmc.project.infrasight.statscaptureservice.entities.ServerEntity;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.DiscMountEntity;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.DiscStatsEntity;
+import gmc.project.infrasight.statscaptureservice.entities.embedded.IOStatData;
+import gmc.project.infrasight.statscaptureservice.entities.embedded.IOStatEntity;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.StatsEntity;
 import gmc.project.infrasight.statscaptureservice.services.ServerService;
 import gmc.project.infrasight.statscaptureservice.services.StatsService;
@@ -25,9 +27,9 @@ public class StatsServiceImpl implements StatsService {
 	private ServerService serverService;
 
 	@Override
-	public void storeDiscStat(String host, List<String> discResponse) throws ServiceNotFoundException {
+	public void storeDiscAndIOStat(String host, List<String> discResponse, List<String> ioResponseLines) throws ServiceNotFoundException {
 		ServerEntity server = serverService.findOne(host);
-		if (!(discResponse == null)) {
+		if (!(discResponse == null && ioResponseLines == null)) {
 			DiscStatsEntity discStats = new DiscStatsEntity();
 			Set<DiscMountEntity> discMounts = new HashSet<>();
 			for (String discLines : discResponse) {
@@ -40,6 +42,17 @@ public class StatsServiceImpl implements StatsService {
 			}
 			discStats.setDiscMounts(discMounts);
 			server.getDiscStats().add(discStats);
+			IOStatEntity ioStatEntity = new IOStatEntity();
+			Set<IOStatData> ioStats = new HashSet<>();
+			String[] ioLines = ioResponseLines.get(0).split("\n");
+			for(int lineNo = 6; lineNo < ioLines.length; lineNo++) {
+				String ioLine = ioLines[lineNo];
+				log.error(ioLine);
+				IOStatData ioStatsdata = new IOStatData(ioLine);
+				ioStats.add(ioStatsdata);
+			}
+			ioStatEntity.setIoDatas(ioStats);
+			server.getIoStats().add(ioStatEntity);
 			server.setIsActive(true);
 		} else {
 			server.setIsActive(false);
@@ -48,21 +61,25 @@ public class StatsServiceImpl implements StatsService {
 	}
 
 	@Override
-	public void storeCPUAndRAM(String host, List<String> cpuLine, List<String> ramLine)
+	public void storeCPUAndRAM(String host, List<String> cpuLine, List<String> ramLine, List<String> swapLine, List<String> loadLine)
 			throws ServiceNotFoundException {
 		ServerEntity server = serverService.findOne(host);
 		StatsEntity stats = new StatsEntity();
-		if (!(cpuLine == null && ramLine == null)) {
+		String serverUptime = "O mins";
+		if (!(cpuLine == null && ramLine == null && swapLine == null && loadLine == null)) {
 			String[] cpulines;
 			if (cpuLine.size() == 2)
 				cpulines = cpuLine.get(1).split("\n");
 			else
 				cpulines = cpuLine.get(0).split("\n");
-			stats = new StatsEntity(cpulines[3], ramLine.get(0));
+			stats = new StatsEntity(cpulines[3], ramLine.get(0), swapLine.get(0), loadLine.get(0));
+			serverUptime = loadLine.get(0).split(",")[0].trim();
+			log.error("serverUptime: {}", serverUptime);
 			log.error("Ram: {}", stats.getTotalRam());
 		}
 		server.getRamCPU().add(stats);
 		server.setIsActive(stats.getIsActive());
+		server.setServerUpTime(serverUptime);
 		serverService.save(server);
 	}
 

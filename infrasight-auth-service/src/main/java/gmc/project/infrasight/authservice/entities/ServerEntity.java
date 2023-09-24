@@ -1,4 +1,4 @@
-package gmc.project.infrasight.statscaptureservice.entities;
+package gmc.project.infrasight.authservice.entities;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -8,9 +8,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gmc.project.infrasight.statscaptureservice.entities.embedded.DiscStatsEntity;
-import gmc.project.infrasight.statscaptureservice.entities.embedded.IOStatEntity;
-import gmc.project.infrasight.statscaptureservice.entities.embedded.StatsEntity;
+import gmc.project.infrasight.authservice.entities.embedded.DiscStatsEntity;
+import gmc.project.infrasight.authservice.entities.embedded.IOStatEntity;
+import gmc.project.infrasight.authservice.entities.embedded.StatsEntity;
 import lombok.Data;
 
 @Data

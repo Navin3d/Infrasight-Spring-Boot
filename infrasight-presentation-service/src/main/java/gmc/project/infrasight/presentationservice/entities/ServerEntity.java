@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gmc.project.infrasight.presentationservice.entities.embedded.DiscStatsEntity;
+import gmc.project.infrasight.presentationservice.entities.embedded.IOStatEntity;
 import gmc.project.infrasight.presentationservice.entities.embedded.StatsEntity;
 import lombok.Data;
 
@@ -32,12 +33,16 @@ public class ServerEntity implements Serializable {
 	private String username;
 	
 	private String password;
+
+	private String serverUpTime;
 	
 	private Boolean isActive;
 		
 	private Set<StatsEntity> ramCPU = new HashSet<>();
 	
 	private Set<DiscStatsEntity> discStats = new HashSet<>();
+	
+	private Set<IOStatEntity> ioStats = new HashSet<>();
 	
 	@DBRef
 	private UserEntity serverAdmin;

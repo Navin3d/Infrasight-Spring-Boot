@@ -1,13 +1,18 @@
 package gmc.project.infrasight.authservice.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(exclude = { "adminOfServers", "accessibleServers" })
 @Data
 @Document(collection = "users")
 public class UserEntity implements Serializable {
@@ -28,5 +33,11 @@ public class UserEntity implements Serializable {
 	private String username;
 	
 	private String password;
+	
+	@DBRef
+	private Set<ServerEntity> adminOfServers = new HashSet<>();
+	
+	@DBRef
+	private Set<ServerEntity> accessibleServers = new HashSet<>();
 
 }

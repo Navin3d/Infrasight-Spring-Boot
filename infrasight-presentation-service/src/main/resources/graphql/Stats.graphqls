@@ -1,7 +1,11 @@
 type Stats {
     id: ID
-    availableRam: Int
-    totalRam: Int
-    cpuPerformance: Float
-    capturedAt: String
+	availableRam: Int
+	totalRam: Int
+	totalSwap: Int
+	freeSwap: Int
+	cpuPerformance: Float
+	serverLoad: Float
+	isActive: Boolean
+	capturedAt: String
 }

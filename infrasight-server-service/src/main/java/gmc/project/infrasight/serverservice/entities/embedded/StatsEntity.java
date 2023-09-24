@@ -22,7 +22,13 @@ public class StatsEntity implements Serializable {
 
 	private Long totalRam;
 
+	private Long totalSwap;
+
+	private Long freeSwap;
+
 	private Double cpuPerformance;
+
+	private Double serverLoad;
 
 	private Boolean isActive;
 
@@ -33,7 +39,7 @@ public class StatsEntity implements Serializable {
 		this.capturedAt = LocalDateTime.now();
 	}
 	
-	public StatsEntity(String cpuLine, String ramLine) {
+	public StatsEntity(String cpuLine, String ramLine, String swapLine, String loadLine) {
 		/*
 		 * RAM Lines
 		 */
@@ -48,9 +54,27 @@ public class StatsEntity implements Serializable {
 		String[] strarray = cpuLine.split("\\s+");
 		Double cpuPerformance = 100 - (Double.parseDouble(strarray[11]));
 		DecimalFormat twoDForm = new DecimalFormat("#.##");
-		
+
+		/*
+		 * SWAP Lines
+		 */
+		String[] requiredSwapLines = swapLine.split("\n")[2].split("\\s+");
+		log.error("swapLine: {}", swapLine);
+		log.error("Total Swap: {}", Long.valueOf(requiredSwapLines[1].trim()));
+		log.error("Free Swap: {}", Long.valueOf(requiredSwapLines[3].trim()));
+
+		/*
+		 * LOAD Lines
+		 */
+		Double requiredLoadLines = Double.parseDouble(loadLine.split("users,\\s+")[1].split("\\s+")[4].trim());
+		log.error("loadLine: {}", loadLine);
+		log.error("Load: {}", requiredLoadLines);
+
 		this.availableRam = Long.parseLong(memavail[1]);
 		this.totalRam = Long.parseLong(totlram[1]);
+		this.totalSwap = Long.valueOf(requiredSwapLines[1].trim());
+		this.freeSwap = Long.valueOf(requiredSwapLines[3].trim());
+		this.serverLoad = Double.valueOf(twoDForm.format(requiredLoadLines));
 		this.cpuPerformance = Double.valueOf(twoDForm.format(cpuPerformance));
 		this.isActive = true;
 		this.capturedAt = LocalDateTime.now();

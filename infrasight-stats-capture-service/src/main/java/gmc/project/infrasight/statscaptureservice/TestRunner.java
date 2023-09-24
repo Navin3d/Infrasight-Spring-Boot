@@ -14,7 +14,7 @@ public class TestRunner implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		capService.captureDiscUtilization();
+		capService.captureDiscAndIOUtilization();
 
 		capService.captureMemoryAndCPUStats();
 	}

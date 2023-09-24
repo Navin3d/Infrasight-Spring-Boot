@@ -1,0 +1,15 @@
+type IOStatData {
+	  id: String
+	  device: String
+	  transferPerSecond: String
+	  readPerSecond: String
+	  writePerSecond: String
+	  averageRead: String
+	  averageWrite: String
+}
+
+type IOStats {
+	  id: String
+	  ioDatas: [IOStatData]
+	  capturedAt: String
+}
