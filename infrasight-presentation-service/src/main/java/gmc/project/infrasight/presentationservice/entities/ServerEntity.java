@@ -40,6 +40,12 @@ public class ServerEntity implements Serializable {
 	private Set<DiscStatsEntity> discStats = new HashSet<>();
 	
 	@DBRef
+	private UserEntity serverAdmin;
+
+	@DBRef
+	private Set<UserEntity> serverUsers = new HashSet<>();
+	
+	@DBRef
 	private Set<ProjectEntity> projects = new HashSet<>();
 
 }

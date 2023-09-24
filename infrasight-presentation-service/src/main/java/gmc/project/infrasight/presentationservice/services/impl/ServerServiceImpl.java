@@ -74,11 +74,16 @@ public class ServerServiceImpl implements ServerService {
 
 	@Override
 	public List<ServerEntity> findServersByDates(Integer pageNo, Integer pageSize, String from, String to) {
+		List<ServerEntity> foundServers = findAll(pageNo, pageSize);
+		return filterServerByDates(foundServers, from, to);
+	}
+
+	@Override
+	public List<ServerEntity> filterServerByDates(List<ServerEntity> servers, String from, String to) {
 		LocalDate fromDate = DateTimeUtil.parseDate(from);
 		LocalDate toDate = DateTimeUtil.parseDate(to);
-		List<ServerEntity> foundServers = findAll(pageNo, pageSize);
 		List<ServerEntity> returnValue = new ArrayList<>();
-		for(ServerEntity server: foundServers) {
+		for(ServerEntity server: servers) {
 			List<StatsEntity> rams = server.getRamCPU().stream().filter(ram -> {
 				LocalDate capturedDate = ram.getCapturedAt().toLocalDate();
 				if(capturedDate.isBefore(toDate) && capturedDate.isAfter(fromDate))

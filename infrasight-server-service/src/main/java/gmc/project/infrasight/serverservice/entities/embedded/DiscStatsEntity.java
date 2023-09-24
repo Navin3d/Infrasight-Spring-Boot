@@ -2,6 +2,8 @@ package gmc.project.infrasight.serverservice.entities.embedded;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 
@@ -15,18 +17,12 @@ public class DiscStatsEntity implements Serializable {
 	@Id
 	private String id;
 	
-	private String fileSystem;
-	
-	private String size;
-	
-	private String used;
-	
-	private String available;
-	
-	private String use;
-	
-	private String mountedOn;
+	private Set<DiscMountEntity> discMounts = new HashSet<>();
 		
 	private LocalDate capturedAt;
+	
+	public DiscStatsEntity() {
+		this.capturedAt = LocalDate.now();
+	}
 
 }

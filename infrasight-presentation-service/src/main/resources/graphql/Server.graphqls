@@ -4,6 +4,9 @@ type Query {
 	
 	projects: [Project]
 	project(uniqueId: ID!): Project
+	
+	user(id: String!): User
+	userServers(userId: String, from: String, to: String): [Server]
 }
 
 
@@ -16,4 +19,6 @@ type Server {
     ramCPU: [Stats]
     discStats: [DiscStats]
     projects: [Project]
+    serverAdmin: User
+    serverUsers: [User]
 }

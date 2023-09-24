@@ -13,4 +13,6 @@ public interface ServerService {
 	public List<ServerEntity> findServersByDates(Integer pageNo, Integer pageSize, String from, String to);
 	public ServerEntity findByDateTime(String serverId, String from, String to) throws ServerNotActiveException;
 	public ServerEntity findByDateTime(String serverId, String to) throws ServerNotActiveException;
+	
+	public List<ServerEntity> filterServerByDates(List<ServerEntity> servers, String from, String to);
 }

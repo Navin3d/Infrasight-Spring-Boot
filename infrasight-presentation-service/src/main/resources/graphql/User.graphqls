@@ -1,0 +1,9 @@
+type User {
+  id: String
+  name: String
+  employeeId: Int
+  companyEmail: String
+  username: String
+  adminOfServers: [Server]
+  accessibleServers: [Server]
+}
