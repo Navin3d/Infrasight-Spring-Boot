@@ -25,8 +25,10 @@ public class StatsEntity implements Serializable {
 	private Long totalSwap;
 
 	private Long freeSwap;
-
+	
 	private Double cpuPerformance;
+	
+	private Double ramPerformance;
 
 	private Double serverLoad;
 
@@ -115,5 +117,5 @@ public class StatsEntity implements Serializable {
 	public void setIsActive(Boolean active) {
 		this.isActive = active;
 	}
-
+	
 }

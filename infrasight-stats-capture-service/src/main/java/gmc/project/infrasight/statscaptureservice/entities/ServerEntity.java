@@ -13,7 +13,9 @@ import gmc.project.infrasight.statscaptureservice.entities.embedded.DiscStatsEnt
 import gmc.project.infrasight.statscaptureservice.entities.embedded.IOStatEntity;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.StatsEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(exclude = { "projects", "serverUsers" })
 @Data
 @Document(collection = "servers")
 public class ServerEntity implements Serializable {

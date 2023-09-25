@@ -1,4 +1,4 @@
-package gmc.project.infrasight.authservice.entities.embedded;
+package gmc.project.infrasight.statscaptureservice.entities.embedded;
 
 import java.io.Serializable;
 

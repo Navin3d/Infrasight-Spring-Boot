@@ -1,15 +1,20 @@
 package gmc.project.infrasight.statscaptureservice.services.impl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.management.ServiceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gmc.project.infrasight.statscaptureservice.daos.ProjectDao;
+import gmc.project.infrasight.statscaptureservice.entities.ProjectEntity;
 import gmc.project.infrasight.statscaptureservice.entities.ServerEntity;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.DiscMountEntity;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.DiscStatsEntity;
@@ -27,12 +32,15 @@ import lombok.extern.slf4j.Slf4j;
 public class StatsServiceImpl implements StatsService {
 
 	@Autowired
+	private ProjectDao projectDao;
+	@Autowired
 	private ServerService serverService;
 	@Autowired
 	private ProphetServiceFeignClient prophetService;
 
 	@Override
-	public void storeDiscAndIOStat(String host, List<String> discResponse, List<String> ioResponseLines) throws ServiceNotFoundException {
+	public void storeDiscAndIOStat(String host, List<String> discResponse, List<String> ioResponseLines)
+			throws ServiceNotFoundException {
 		ServerEntity server = serverService.findOne(host);
 		if (!(discResponse == null && ioResponseLines == null)) {
 			DiscStatsEntity discStats = new DiscStatsEntity();
@@ -50,7 +58,7 @@ public class StatsServiceImpl implements StatsService {
 			IOStatEntity ioStatEntity = new IOStatEntity();
 			Set<IOStatData> ioStats = new HashSet<>();
 			String[] ioLines = ioResponseLines.get(0).split("\n");
-			for(int lineNo = 6; lineNo < ioLines.length; lineNo++) {
+			for (int lineNo = 6; lineNo < ioLines.length; lineNo++) {
 				String ioLine = ioLines[lineNo];
 				log.error(ioLine);
 				IOStatData ioStatsdata = new IOStatData(ioLine);
@@ -66,8 +74,8 @@ public class StatsServiceImpl implements StatsService {
 	}
 
 	@Override
-	public void storeCPUAndRAM(String host, List<String> cpuLine, List<String> ramLine, List<String> swapLine, List<String> loadLine)
-			throws ServiceNotFoundException {
+	public void storeCPUAndRAM(String host, List<String> cpuLine, List<String> ramLine, List<String> swapLine,
+			List<String> loadLine) throws ServiceNotFoundException {
 		ServerEntity server = serverService.findOne(host);
 		StatsEntity stats = new StatsEntity();
 		String serverUptime = "O mins";
@@ -81,28 +89,31 @@ public class StatsServiceImpl implements StatsService {
 			try {
 				Long totalRam = stats.getTotalRam();
 				Long freeRam = stats.getAvailableRam();
-				Long usedRam = totalRam - freeRam; 
+				Long usedRam = totalRam - freeRam;
 				double ramusedPercentage = (usedRam.doubleValue() / totalRam.doubleValue()) * 100D;
 				Double cpuUse = stats.getCpuPerformance();
 				log.error("ramusedPercentage: {}", ramusedPercentage);
-				log.error("{}) {}: {} - {}", server.getName(), server.getRamLimit(), ((double) (usedRam / totalRam)), cpuUse.toString());
+				log.error("{}) {}: {} - {}", server.getName(), server.getRamLimit(), ((double) (usedRam / totalRam)),
+						cpuUse.toString());
 				LocalDate today = LocalDate.now();
 //				if(server.getRamLimit() < ramusedPercentage && (server.getLastRamNotificationSent() == null || server.getLastRamNotificationSent().isBefore(today))) {
-				if(server.getRamLimit() < ramusedPercentage) {
+				if (server.getRamLimit() < ramusedPercentage) {
 					MailingModel mail = new MailingModel();
 					mail.setTo(server.getServerAdmin().getCompanyEmail());
 					mail.setSubject("Update on your server " + server.getName());
-					mail.setBody("Your server " + server.getName() + " has over throttled with RAM utilization of " + ramusedPercentage + "% and corresponding CPU usage is " + cpuUse + "%");
+					mail.setBody("Your server " + server.getName() + " has over throttled with RAM utilization of "
+							+ ramusedPercentage + "% and corresponding CPU usage is " + cpuUse + "%");
 					prophetService.sendMail(mail);
 //					server.setLastRamNotificationSent(today);
 				}
 //				}
 //				if(server.getCpuLimit() < cpuUse && (server.getLastCpuNotificationSent() == null || server.getLastCpuNotificationSent().isBefore(today))) {
-				if(server.getCpuLimit() < cpuUse) {
+				if (server.getCpuLimit() < cpuUse) {
 					MailingModel mail = new MailingModel();
 					mail.setTo(server.getServerAdmin().getCompanyEmail());
 					mail.setSubject("Update on your server " + server.getName());
-					mail.setBody("Your server " + server.getName() + " has over throttled with CPU utilization of " + cpuUse + "% and corresponding RAM usage is " + ramusedPercentage + "%");
+					mail.setBody("Your server " + server.getName() + " has over throttled with CPU utilization of "
+							+ cpuUse + "% and corresponding RAM usage is " + ramusedPercentage + "%");
 					prophetService.sendMail(mail);
 //					server.setLastCpuNotificationSent(today);
 				}
@@ -119,6 +130,44 @@ public class StatsServiceImpl implements StatsService {
 		server.setIsActive(stats.getIsActive());
 		server.setServerUpTime(serverUptime);
 		serverService.save(server);
+	}
+
+	@Override
+	public List<ProjectEntity> storeProject(String serverId, List<String> serverLine) throws ServiceNotFoundException {
+		ServerEntity server = serverService.findOne(serverId);
+		String projectLine = serverLine.get(0);
+		log.error(projectLine);
+		List<ProjectEntity> returnValue = new ArrayList<>();
+		String[] lines = projectLine.split("\n");
+		for (String line : lines) {
+			String[] words = line.split("\\s+");
+			log.error("CPU: {} RAM: {} Project: {}", words[2], words[3], words[11]);
+			
+			ProjectEntity project = new ProjectEntity();
+			project.setProgrammingLanguage("Java Script");
+			project.setFramework("Node JS");
+			project.setInstalledOn(server);
+			StatsEntity statsEntity = new StatsEntity();
+			statsEntity.setCpuPerformance(Double.valueOf(words[2]));
+			statsEntity.setRamPerformance(Double.valueOf(words[3]));
+			String regex = ".*\\/([^\\/]+)\\/node_modules\\/(.*)?";
+			Pattern pattern = Pattern.compile(regex);
+			Matcher matcher = pattern.matcher(words[11]);
+			if (matcher.matches()) {
+				String result = matcher.group(1);
+				project.setId(result);
+			} else {
+				project.setId("UNKNOWN");
+			}
+			project.getRamCpuStats().add(statsEntity);
+			ProjectEntity savedProject = projectDao.save(project);
+			server.getProjects().add(savedProject);
+			serverService.save(server);		
+		}
+		
+		log.error(returnValue.toString());
+		
+		return returnValue;
 	}
 
 }

@@ -1,4 +1,4 @@
-package gmc.project.infrasight.authservice.entities;
+package gmc.project.infrasight.statscaptureservice.entities;
 
 import java.io.Serializable;
 import java.util.HashSet;

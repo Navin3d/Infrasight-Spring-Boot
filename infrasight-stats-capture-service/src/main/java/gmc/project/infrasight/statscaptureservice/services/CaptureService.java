@@ -23,6 +23,7 @@ public class CaptureService {
 	private final String LOAD_AND_UPTIME_COMMAND = "uptime";
 	private final String IO_READ_WRITE_COMMAND = "iostat";
 	private final String SWAP_STAT_COMMAND = "free -m";
+	private final String PROJECT_STATS_COMMAND = "ps aux | grep node";
 
 	@Autowired
 	private ProphetServiceFeignClient prophetService;
@@ -48,6 +49,8 @@ public class CaptureService {
 				List<String> swapResponseLines = connectionService.executeCommand(SWAP_STAT_COMMAND, serverSession);
 				List<String> loadResponseLine = connectionService.executeCommand(LOAD_AND_UPTIME_COMMAND, serverSession);
 				statsService.storeCPUAndRAM(serverId, cpuResponseLines, ramResponseLines, swapResponseLines, loadResponseLine);
+				List<String> projectResponseLine = connectionService.executeCommand(PROJECT_STATS_COMMAND, serverSession);
+				statsService.storeProject(serverId, projectResponseLine);
 			} catch(Exception e) {
 				LocalDate today = LocalDate.now();
 				if(server.getLastDownNotificationSent() == null || server.getLastDownNotificationSent().isBefore(today))
