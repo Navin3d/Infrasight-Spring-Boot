@@ -1,5 +1,6 @@
 package gmc.project.infrasight.statscaptureservice.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.jcraft.jsch.Session;
 
 import gmc.project.infrasight.statscaptureservice.entities.ServerEntity;
+import gmc.project.infrasight.statscaptureservice.models.MailingModel;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,6 +24,8 @@ public class CaptureService {
 	private final String IO_READ_WRITE_COMMAND = "iostat";
 	private final String SWAP_STAT_COMMAND = "free -m";
 
+	@Autowired
+	private ProphetServiceFeignClient prophetService;
 	@Autowired
 	private ServerService serverService;
 	@Autowired
@@ -45,6 +49,19 @@ public class CaptureService {
 				List<String> loadResponseLine = connectionService.executeCommand(LOAD_AND_UPTIME_COMMAND, serverSession);
 				statsService.storeCPUAndRAM(serverId, cpuResponseLines, ramResponseLines, swapResponseLines, loadResponseLine);
 			} catch(Exception e) {
+				LocalDate today = LocalDate.now();
+				if(server.getLastDownNotificationSent() == null || server.getLastDownNotificationSent().isBefore(today))
+					try {
+						MailingModel mail = new MailingModel();
+						mail.setTo(server.getServerAdmin().getCompanyEmail());
+						mail.setSubject("Update on your server " + server.getName());
+						mail.setBody("Your server " + server.getName() + " is down.");
+						prophetService.sendMail(mail);
+//						server.setLastDownNotificationSent(today);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						log.error("Error sending mail: {}.", ex.getMessage());
+					}
 				e.printStackTrace();
 				log.error("CPU and RAM: The server {} is down.", server.getName());
 				statsService.storeCPUAndRAM(serverId, null, null, null, null);

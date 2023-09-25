@@ -1,6 +1,7 @@
 package gmc.project.infrasight.statscaptureservice.entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +38,16 @@ public class ServerEntity implements Serializable {
 	private String serverUpTime;
 	
 	private Boolean isActive;
+	
+	private Double cpuLimit;
+	
+	private Long ramLimit;
+	
+	private LocalDate lastRamNotificationSent;
+	
+	private LocalDate lastCpuNotificationSent;
+	
+	private LocalDate lastDownNotificationSent;
 		
 	private Set<StatsEntity> ramCPU = new HashSet<>();
 	

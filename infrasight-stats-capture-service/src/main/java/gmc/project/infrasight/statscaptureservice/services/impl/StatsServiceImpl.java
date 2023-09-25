@@ -1,5 +1,6 @@
 package gmc.project.infrasight.statscaptureservice.services.impl;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,8 @@ import gmc.project.infrasight.statscaptureservice.entities.embedded.DiscStatsEnt
 import gmc.project.infrasight.statscaptureservice.entities.embedded.IOStatData;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.IOStatEntity;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.StatsEntity;
+import gmc.project.infrasight.statscaptureservice.models.MailingModel;
+import gmc.project.infrasight.statscaptureservice.services.ProphetServiceFeignClient;
 import gmc.project.infrasight.statscaptureservice.services.ServerService;
 import gmc.project.infrasight.statscaptureservice.services.StatsService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,8 @@ public class StatsServiceImpl implements StatsService {
 
 	@Autowired
 	private ServerService serverService;
+	@Autowired
+	private ProphetServiceFeignClient prophetService;
 
 	@Override
 	public void storeDiscAndIOStat(String host, List<String> discResponse, List<String> ioResponseLines) throws ServiceNotFoundException {
@@ -73,6 +78,39 @@ public class StatsServiceImpl implements StatsService {
 			else
 				cpulines = cpuLine.get(0).split("\n");
 			stats = new StatsEntity(cpulines[3], ramLine.get(0), swapLine.get(0), loadLine.get(0));
+			try {
+				Long totalRam = stats.getTotalRam();
+				Long freeRam = stats.getAvailableRam();
+				Long usedRam = totalRam - freeRam; 
+				double ramusedPercentage = (usedRam.doubleValue() / totalRam.doubleValue()) * 100D;
+				Double cpuUse = stats.getCpuPerformance();
+				log.error("ramusedPercentage: {}", ramusedPercentage);
+				log.error("{}) {}: {} - {}", server.getName(), server.getRamLimit(), ((double) (usedRam / totalRam)), cpuUse.toString());
+				LocalDate today = LocalDate.now();
+//				if(server.getRamLimit() < ramusedPercentage && (server.getLastRamNotificationSent() == null || server.getLastRamNotificationSent().isBefore(today))) {
+				if(server.getRamLimit() < ramusedPercentage) {
+					MailingModel mail = new MailingModel();
+					mail.setTo(server.getServerAdmin().getCompanyEmail());
+					mail.setSubject("Update on your server " + server.getName());
+					mail.setBody("Your server " + server.getName() + " has over throttled with RAM utilization of " + ramusedPercentage + "% and corresponding CPU usage is " + cpuUse + "%");
+					prophetService.sendMail(mail);
+//					server.setLastRamNotificationSent(today);
+				}
+//				}
+//				if(server.getCpuLimit() < cpuUse && (server.getLastCpuNotificationSent() == null || server.getLastCpuNotificationSent().isBefore(today))) {
+				if(server.getCpuLimit() < cpuUse) {
+					MailingModel mail = new MailingModel();
+					mail.setTo(server.getServerAdmin().getCompanyEmail());
+					mail.setSubject("Update on your server " + server.getName());
+					mail.setBody("Your server " + server.getName() + " has over throttled with CPU utilization of " + cpuUse + "% and corresponding RAM usage is " + ramusedPercentage + "%");
+					prophetService.sendMail(mail);
+//					server.setLastCpuNotificationSent(today);
+				}
+//				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.error("Error Sending mail.");
+			}
 			serverUptime = loadLine.get(0).split(",")[0].trim();
 			log.error("serverUptime: {}", serverUptime);
 			log.error("Ram: {}", stats.getTotalRam());
