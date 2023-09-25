@@ -54,8 +54,8 @@ public class AccessServiceImpl implements AccessService {
 		UserEntity foundUser = findOneUser(userId);
 		UserEntity serverAdmin = findOneUser(ownerId);
 		ServerEntity foundServer = findOneServer(serverId);
-//		if(!foundServer.getServerAdmin().equals(serverAdmin))
-//			throw new AccessException(serverId);
+		if(!foundServer.getServerAdmin().equals(serverAdmin))
+			throw new AccessException(serverId);
 		foundServer.setServerAdmin(foundUser);
 		serverdao.save(foundServer);
 		foundUser.getAdminOfServers().add(foundServer);
