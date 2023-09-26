@@ -9,8 +9,10 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gmc.project.infrasight.presentationservice.entities.ProjectEntity;
 import gmc.project.infrasight.presentationservice.entities.ServerEntity;
 import gmc.project.infrasight.presentationservice.entities.UserEntity;
+import gmc.project.infrasight.presentationservice.services.ProjectService;
 import gmc.project.infrasight.presentationservice.services.ServerService;
 import gmc.project.infrasight.presentationservice.services.UserService;
 
@@ -22,6 +24,9 @@ public class PresentationController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private ProjectService projectService;
 
 	@QueryMapping
 	public List<ServerEntity> servers(@Argument Integer limit, @Argument Integer page, @Argument String from,
@@ -58,6 +63,18 @@ public class PresentationController {
 	}
 	
 	@QueryMapping
+	public List<UserEntity> users() {
+		List<UserEntity> foundUser = null;
+		try {
+			foundUser = userService.findAll();
+		} catch (Exception e) {
+			e.printStackTrace();
+			foundUser = new ArrayList<>();
+		}
+		return foundUser;
+	}
+	
+	@QueryMapping
 	public UserEntity user(@Argument String id) {
 		UserEntity foundUser = null;
 		try {
@@ -77,6 +94,18 @@ public class PresentationController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			returnValue = new ArrayList<>();
+		}
+		return returnValue;
+	}
+	
+	@QueryMapping
+	public ProjectEntity project(@Argument String uniqueId) {
+		ProjectEntity returnValue = null;
+		try {
+			returnValue = projectService.findById(uniqueId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			returnValue = new ProjectEntity();
 		}
 		return returnValue;
 	}

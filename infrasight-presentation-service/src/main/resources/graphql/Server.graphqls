@@ -5,6 +5,7 @@ type Query {
 	projects: [Project]
 	project(uniqueId: ID!): Project
 	
+	users: [User]
 	user(id: String!): User
 	userServers(userId: String, from: String, to: String): [Server]
 }
@@ -16,10 +17,12 @@ type Server {
     description: String
     host: String
     isActive: Boolean
+    serverUpTime: String
     ramCPU: [Stats]
     discStats: [DiscStats]
     ioStats: [IOStats]
     projects: [Project]
     serverAdmin: User
     serverUsers: [User]
+    tasks: [Task]
 }

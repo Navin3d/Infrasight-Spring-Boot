@@ -52,4 +52,9 @@ public class UserServiceImpl implements UserService {
 		return serverService.filterServerByDates(servers, from, to);
 	}
 
+	@Override
+	public List<UserEntity> findAll() {
+		return userDao.findAll();
+	}
+
 }

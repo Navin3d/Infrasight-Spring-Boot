@@ -15,7 +15,7 @@ import gmc.project.infrasight.serverservice.entities.embedded.StatsEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(exclude = { "projects", "serverUsers" })
+@EqualsAndHashCode(exclude = { "projects", "serverUsers", "tasks" })
 @Data
 @Document(collection = "servers")
 public class ServerEntity implements Serializable {
@@ -65,5 +65,8 @@ public class ServerEntity implements Serializable {
 	
 	@DBRef
 	private Set<ProjectEntity> projects = new HashSet<>();
+	
+	@DBRef
+	private Set<TaskEntity> tasks = new HashSet<>();
 
 }

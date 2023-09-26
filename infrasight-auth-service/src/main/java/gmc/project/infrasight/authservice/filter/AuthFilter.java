@@ -16,7 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gmc.project.infrasight.authservice.configurations.AuthConfig;
+import gmc.project.infrasight.authservice.entities.UserEntity;
 import gmc.project.infrasight.authservice.models.LoginModel;
+import gmc.project.infrasight.authservice.services.AuthService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
@@ -26,10 +28,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthFilter extends UsernamePasswordAuthenticationFilter {
 	
 	private final AuthConfig authConfig;
+	private final AuthService authService;
 	
-	public AuthFilter(AuthConfig authConfig, AuthenticationManager authManager) {
+	public AuthFilter(AuthConfig authConfig, AuthService authService, AuthenticationManager authManager) {
 		super.setAuthenticationManager(authManager);
 		this.authConfig = authConfig;
+		this.authService = authService;
 	}
 
 	@Override
@@ -51,9 +55,9 @@ public class AuthFilter extends UsernamePasswordAuthenticationFilter {
 		byte[] secretKey = authConfig.getJwtSecret().getBytes(StandardCharsets.UTF_8);
 		Key hamacKey = new SecretKeySpec(secretKey, SignatureAlgorithm.HS256.getJcaName());
 		String userName = ((User)authResult.getPrincipal()).getUsername();
-		String subject = userName;
+		UserEntity foundUser = authService.findOneUser(userName);
 		String jwtToken = Jwts.builder()
-				.setSubject(subject)
+				.setSubject(foundUser.getId())
 				.setIssuer(authConfig.getIssuer())
 				.setExpiration(new Date(System.currentTimeMillis() + authConfig.getExpeiry()))
 				.signWith(hamacKey)

@@ -44,8 +44,8 @@ public class ConsoleController {
 		ResponseModel<String> body = new ResponseModel<>("Running scan wait for response.", true);
 		HttpStatus status = HttpStatus.OK;
 		try {
-			List<String> response = consoleService.executeInServer(serverId, "lynis audit system --quick");
-			body.setDatas(response);
+			List<String> returnValue = consoleService.runSecurityCheck(serverId);
+			body.setDatas(returnValue);
 		} catch (Exception e) {
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 			body.setMessage("Restricted Command.");

@@ -2,6 +2,7 @@ package gmc.project.infrasight.statscaptureservice.services.impl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import gmc.project.infrasight.statscaptureservice.entities.embedded.IOStatData;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.IOStatEntity;
 import gmc.project.infrasight.statscaptureservice.entities.embedded.StatsEntity;
 import gmc.project.infrasight.statscaptureservice.models.MailingModel;
+import gmc.project.infrasight.statscaptureservice.services.MLServiceFeignClient;
 import gmc.project.infrasight.statscaptureservice.services.ProphetServiceFeignClient;
 import gmc.project.infrasight.statscaptureservice.services.ServerService;
 import gmc.project.infrasight.statscaptureservice.services.StatsService;
@@ -37,6 +39,8 @@ public class StatsServiceImpl implements StatsService {
 	private ServerService serverService;
 	@Autowired
 	private ProphetServiceFeignClient prophetService;
+	@Autowired
+	private MLServiceFeignClient mlServiceFeignClient;
 
 	@Override
 	public void storeDiscAndIOStat(String host, List<String> discResponse, List<String> ioResponseLines)
@@ -122,6 +126,44 @@ public class StatsServiceImpl implements StatsService {
 				e.printStackTrace();
 				log.error("Error Sending mail.");
 			}
+			try {
+				Long totalRam = stats.getTotalRam();
+				Long freeRam = stats.getAvailableRam();
+				Long usedRam = totalRam - freeRam;
+				double ramusedPercentage = (usedRam.doubleValue() / totalRam.doubleValue()) * 100D;
+				double cpuUse = stats.getCpuPerformance();
+				double load = stats.getServerLoad();				
+				List<DiscStatsEntity> disc = new ArrayList<>();
+				disc.addAll(server.getDiscStats());
+				List<DiscMountEntity> mount = new ArrayList<>();
+				mount.addAll(disc.get(0).getDiscMounts());
+				long discUse = Long.valueOf(mount.get(0).getUse().split("%")[0]);
+				Integer uptime = 50;
+				
+				try {
+					String res = mlServiceFeignClient.suggestScaling((int) cpuUse, (int) discUse, (int) ramusedPercentage, (int) load, (int) uptime);
+					log.error("res: {}", res);
+					if(res == "down") {
+						MailingModel mail = new MailingModel();
+						mail.setTo(server.getServerAdmin().getCompanyEmail());
+						mail.setBody("Scaling suggestion");
+						mail.setSubject("your server " + server.getName() + " needs to scale down consider scaling down.");
+						prophetService.sendMail(mail);
+					}
+					if(res == "up") {
+						MailingModel mail = new MailingModel();
+						mail.setTo(server.getServerAdmin().getCompanyEmail());
+						mail.setBody("Scaling suggestion");
+						mail.setSubject("your server " + server.getName() + " needs to scale up consider scaling up.");
+						prophetService.sendMail(mail);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			} catch(Exception e) {
+				
+			}
 			serverUptime = loadLine.get(0).split(",")[0].trim();
 			log.error("serverUptime: {}", serverUptime);
 			log.error("Ram: {}", stats.getTotalRam());
@@ -142,31 +184,37 @@ public class StatsServiceImpl implements StatsService {
 		for (String line : lines) {
 			String[] words = line.split("\\s+");
 			log.error("CPU: {} RAM: {} Project: {}", words[2], words[3], words[11]);
-			
-			ProjectEntity project = new ProjectEntity();
-			project.setProgrammingLanguage("Java Script");
-			project.setFramework("Node JS");
-			project.setInstalledOn(server);
-			StatsEntity statsEntity = new StatsEntity();
-			statsEntity.setCpuPerformance(Double.valueOf(words[2]));
-			statsEntity.setRamPerformance(Double.valueOf(words[3]));
+
+			String projectId = "";
 			String regex = ".*\\/([^\\/]+)\\/node_modules\\/(.*)?";
 			Pattern pattern = Pattern.compile(regex);
 			Matcher matcher = pattern.matcher(words[11]);
 			if (matcher.matches()) {
 				String result = matcher.group(1);
-				project.setId(result);
+				projectId = result;
 			} else {
-				project.setId("UNKNOWN");
+				projectId = "UNKNOWN";
 			}
+			ProjectEntity project = projectDao.findById(projectId).orElse(null);
+			if (project == null) {
+				project = new ProjectEntity();
+				project.setId(projectId);
+				project.setProgrammingLanguage("Java Script");
+				project.setFramework("Node JS");
+				project.setInstalledOn(server);
+			}
+			StatsEntity statsEntity = new StatsEntity();
+			statsEntity.setCpuPerformance(Double.valueOf(words[2]));
+			statsEntity.setRamPerformance(Double.valueOf(words[3]));
+
 			project.getRamCpuStats().add(statsEntity);
 			ProjectEntity savedProject = projectDao.save(project);
 			server.getProjects().add(savedProject);
-			serverService.save(server);		
+			serverService.save(server);
 		}
-		
+
 		log.error(returnValue.toString());
-		
+
 		return returnValue;
 	}
 

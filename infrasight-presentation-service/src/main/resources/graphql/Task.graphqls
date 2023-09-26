@@ -1,0 +1,8 @@
+type Task {
+  id: String
+  tittle: String
+  command: String
+  atEndOfDay: Boolean
+  deleteAfterExecution: Boolean
+  runOnServers: Server
+}

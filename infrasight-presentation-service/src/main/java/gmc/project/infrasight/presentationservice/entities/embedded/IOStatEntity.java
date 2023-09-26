@@ -1,4 +1,4 @@
-package gmc.project.infrasight.statscaptureservice.entities.embedded;
+package gmc.project.infrasight.presentationservice.entities.embedded;
 
 import java.io.Serializable;
 import java.time.LocalDate;

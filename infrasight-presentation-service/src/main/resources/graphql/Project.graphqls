@@ -1,8 +1,7 @@
 type Project {
     id: ID
-    title: String
-    description: String
     programmingLanguage: String
     framework: String
     installedOn: Server
+    ramCpuStats: [Stats]
 }

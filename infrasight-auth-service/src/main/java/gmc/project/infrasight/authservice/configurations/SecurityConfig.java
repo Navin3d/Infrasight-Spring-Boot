@@ -41,7 +41,7 @@ public class SecurityConfig {
 	}
 
 	private AuthFilter getAuthManager() {
-		AuthFilter authFilter = new AuthFilter(authConfig, authManager);
+		AuthFilter authFilter = new AuthFilter(authConfig, authService, authManager);
 		authFilter.setFilterProcessesUrl(authConfig.getAuthUrl());
 		return authFilter;
 	}

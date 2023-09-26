@@ -17,6 +17,8 @@ public class TestRunner implements CommandLineRunner {
 		capService.captureDiscAndIOUtilization();
 
 		capService.captureMemoryAndCPUStats();
+		
+		capService.runScheduledtask();
 	}
 
 }

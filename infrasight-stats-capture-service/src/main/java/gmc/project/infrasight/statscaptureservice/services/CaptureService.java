@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.jcraft.jsch.Session;
 
+import gmc.project.infrasight.statscaptureservice.daos.TaskDao;
 import gmc.project.infrasight.statscaptureservice.entities.ServerEntity;
 import gmc.project.infrasight.statscaptureservice.models.MailingModel;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,8 @@ public class CaptureService {
 	private EncryptionService encrypt;
 	@Autowired
 	private SSHConnectionService connectionService;
+	@Autowired
+	private TaskDao taskDao;
 	
 	@Scheduled(fixedDelay = 300000, initialDelay = 300000)
 	public void captureMemoryAndCPUStats() throws Exception {
@@ -72,6 +75,7 @@ public class CaptureService {
 		}
 	}
 	
+	@Scheduled(fixedDelay = 1000000, initialDelay = 1000000)
 	public void captureDiscAndIOUtilization() throws Exception {
 		List<ServerEntity> servers = serverService.findAll();
 		for(ServerEntity server : servers) {
@@ -86,6 +90,30 @@ public class CaptureService {
 				log.error("Disc Utilization: The server {} is down.", server.getName());
 			}
 		}
+	}
+	
+	@Scheduled(fixedDelay = 300000, initialDelay = 300000)
+	public void runScheduledtask() {
+		taskDao.findByAtEndOfDay(true).forEach(task -> {
+			ServerEntity server = task.getRunOnServers();
+			Session serverSession;
+			try {
+				serverSession = connectionService.getSession(server.getHost(), server.getPort(), server.getUsername(), encrypt.decrypt(server.getPassword()));
+				List<String> response = connectionService.executeCommand(task.getCommand(), serverSession);
+				try {
+					MailingModel mail = new MailingModel();
+					mail.setTo(server.getServerAdmin().getCompanyEmail());
+					mail.setSubject("Update on your server " + server.getName());
+					mail.setBody(response.get(0));
+					prophetService.sendMail(mail);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					log.error("Error sending mail: {}.", ex.getMessage());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});;
 	}
 	
 }

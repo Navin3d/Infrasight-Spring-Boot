@@ -1,5 +1,7 @@
 package gmc.project.infrasight.presentationservice.services;
 
-public interface ProjectService {
+import gmc.project.infrasight.presentationservice.entities.ProjectEntity;
 
+public interface ProjectService {
+	public ProjectEntity findById(String id);
 }
