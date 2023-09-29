@@ -8,4 +8,5 @@ This is an Spring Boot microservice application that has provisions to connect t
 docker run -it -p 23000:3000 -p 28080:8080 -p 28000:8000 -p 24200:4200 -p 2022:22
 --name ubuntu-server-2 navin3d/ubuntu-server
 ```
+- You need to change PasswordAuthentication yes change in file /etc/ssh/sshd_config to use password auth instead of private_key.
 
