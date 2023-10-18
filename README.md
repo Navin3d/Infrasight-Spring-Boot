@@ -39,3 +39,37 @@ ecpfcgd+ 11851  0.4  1.9 6186748 644044 ?      Sl   Jun27 801:19 /usr/lib/jvm/ja
 ecpfcgd+ 13590  0.0  0.0 112812   976 pts/1    S+   15:43   0:00 grep --color=auto java
 ecpfcgd+ 14031  0.5  5.6 14294624 1845352 ?    Sl   Aug20 437:40 java -jar ./environmenttool.jar --spring.config.location=file:./application.properties
 ```
+
+```
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class ExtractWords {
+    public static void main(String[] args) {
+        String input = "ecpfcgd+ 11851  0.4  1.9 6186748 644044 ?      Sl   Jun27 801:19 /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.161-0.b14.el7_4.x86_64/jre/bin/java -ea -Xmx384m -Dteamcity_logs=../logs/ -Dlog4j.configuration=file:../conf/teamcity-agent-log4j.xml -classpath /home/ecpfcgdev1/Z8Agents/ecpfcgdev1-agent5/lib/agent-configurator.jar:/home/ecpfcgdev1/Z8Agents/ecpfcgdev1-agent5/lib/agent-installer-ui.jar:/home/ecpfcgdev1/Z8Agents/ecpfcgdev1-agent5/lib/agent-launcher.jar:/home/ecpfcgdev1/Z8Agents/ecpfcgdev1-agent5/lib/agent-openapi.jar:/home/ecpfcgdev1/";
+
+        // Define the regex pattern to capture the second and third words after "/home," "0.4," and "1.9"
+        Pattern pattern = Pattern.compile("(.+) ([0-9.]+) ([0-9.]+) ([0-9.]+) (.*) /home/([^/]+)(.*)");
+        Matcher matcher = pattern.matcher(input);
+
+        if (matcher.find()) {
+            // Group 1 captures the second word after "/home"
+            String user = matcher.group(1).split(" ")[0];
+            String secondWord = matcher.group(6);
+
+            // Group 2 captures "0.4"
+            String cpu = matcher.group(1).split(" ")[3];
+
+            // Group 3 captures "1.9"
+            String ram = matcher.group(2);
+
+            System.out.println("User: " + user);
+            System.out.println("Second Word: " + secondWord);
+            System.out.println("CPU: " + cpu);
+            System.out.println("RAM: " + ram);
+        } else {
+            System.out.println("Pattern not found in the input string.");
+        }
+    }
+}
+```
