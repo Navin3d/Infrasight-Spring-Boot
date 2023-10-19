@@ -49,13 +49,15 @@ public class ExtractWords {
         String input = "ecpfcgd+ 11851  0.4  1.9 6186748 644044 ?      Sl   Jun27 801:19 /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.161-0.b14.el7_4.x86_64/jre/bin/java -ea -Xmx384m -Dteamcity_logs=../logs/ -Dlog4j.configuration=file:../conf/teamcity-agent-log4j.xml -classpath /home/ecpfcgdev1/Z8Agents/ecpfcgdev1-agent5/lib/agent-configurator.jar:/home/ecpfcgdev1/Z8Agents/ecpfcgdev1-agent5/lib/agent-installer-ui.jar:/home/ecpfcgdev1/Z8Agents/ecpfcgdev1-agent5/lib/agent-launcher.jar:/home/ecpfcgdev1/Z8Agents/ecpfcgdev1-agent5/lib/agent-openapi.jar:/home/ecpfcgdev1/";
 
         // Define the regex pattern to capture the second and third words after "/home," "0.4," and "1.9"
-        Pattern pattern = Pattern.compile("(.+) ([0-9.]+) ([0-9.]+) ([0-9.]+) (.*) /home/([^/]+)(.*)");
+        Pattern pattern = Pattern.compile("(.+) ([0-9.]+) ([0-9.]+) ([0-9.]+) (.*) /home/([^/]+)/([^/]+)/([^/]+)(.*)");
         Matcher matcher = pattern.matcher(input);
 
         if (matcher.find()) {
             // Group 1 captures the second word after "/home"
             String user = matcher.group(1).split(" ")[0];
             String secondWord = matcher.group(6);
+            String thirdWord = matcher.group(7);
+            String fourthWord = matcher.group(8);
 
             // Group 2 captures "0.4"
             String cpu = matcher.group(1).split(" ")[3];
@@ -65,6 +67,8 @@ public class ExtractWords {
 
             System.out.println("User: " + user);
             System.out.println("Second Word: " + secondWord);
+            System.out.println("Third Word: " + thirdWord);
+            System.out.println("fourth Word: " + fourthWord);
             System.out.println("CPU: " + cpu);
             System.out.println("RAM: " + ram);
         } else {
