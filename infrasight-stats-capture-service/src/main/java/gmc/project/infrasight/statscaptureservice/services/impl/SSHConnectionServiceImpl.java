@@ -25,7 +25,7 @@ public class SSHConnectionServiceImpl implements SSHConnectionService {
 		jschConfig.put("StrictHostKeyChecking", "no");
 		JSch jsch = new JSch();
 		
-		log.info("Attempting to get session of {} with username {}.", host, userName);
+		log.info("Attempting to get session of {}:{} with username {}.", host, port, userName);
 		Session session = jsch.getSession(userName, host, port);
 		session.setConfig(jschConfig);
 		session.setPassword(password);

@@ -50,7 +50,7 @@ public class CaptureService {
 				List<String> ramResponseLines = connectionService.executeCommand(RAM_UTILIZATION_COMMAND, serverSession);								
 				List<String> cpuResponseLines = connectionService.executeCommand(CPU_UTILIZATION_COMMAND, serverSession);
 				List<String> swapResponseLines = connectionService.executeCommand(SWAP_STAT_COMMAND, serverSession);
-				List<String> loadResponseLine = connectionService.executeCommand(LOAD_AND_UPTIME_COMMAND, serverSession);
+				List<String> loadResponseLine = connectionService.executeCommand(LOAD_AND_UPTIME_COMMAND, serverSession);				
 				statsService.storeCPUAndRAM(serverId, cpuResponseLines, ramResponseLines, swapResponseLines, loadResponseLine);
 				List<String> projectResponseLine = connectionService.executeCommand(PROJECT_STATS_COMMAND, serverSession);
 				statsService.storeProject(serverId, projectResponseLine);
@@ -63,7 +63,7 @@ public class CaptureService {
 						mail.setSubject("Update on your server " + server.getName());
 						mail.setBody("Your server " + server.getName() + " is down.");
 						prophetService.sendMail(mail);
-//						server.setLastDownNotificationSent(today);
+						server.setLastDownNotificationSent(today);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						log.error("Error sending mail: {}.", ex.getMessage());

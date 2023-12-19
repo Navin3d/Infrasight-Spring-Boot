@@ -9,10 +9,10 @@
 		<version>2.7.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>gmc.project.connectversev3</groupId>
-	<artifactId>Connectverse-III</artifactId>
+	<groupId>gmc.project.infrasight</groupId>
+	<artifactId>infrasight-prophet-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Connectverse-III-Prophet-Service</name>
+	<name>infrasight-prophet-service</name>
 	<description>Prophet service of connectversev3.</description>
 	<properties>
 		<java.version>1.8</java.version>
