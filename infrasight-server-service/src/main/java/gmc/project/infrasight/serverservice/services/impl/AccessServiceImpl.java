@@ -20,6 +20,11 @@ public class AccessServiceImpl implements AccessService {
 	private UserDao userDao;
 	
 	@Override
+	public UserEntity saveUser(UserEntity userEntity) {
+		return userDao.save(userEntity);
+	}
+	
+	@Override
 	public ServerEntity findOneServer(String serverId) {
 		ServerEntity foundserver = serverdao.findById(serverId).orElse(null);
 		if(foundserver == null)

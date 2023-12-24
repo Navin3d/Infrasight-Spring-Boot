@@ -6,6 +6,8 @@ import gmc.project.infrasight.serverservice.entities.ServerEntity;
 import gmc.project.infrasight.serverservice.entities.UserEntity;
 
 public interface AccessService {
+	public UserEntity saveUser(UserEntity userEntity);
+	
 	public ServerEntity findOneServer(String serverId);
 	public UserEntity findOneUser(String userId);
 	

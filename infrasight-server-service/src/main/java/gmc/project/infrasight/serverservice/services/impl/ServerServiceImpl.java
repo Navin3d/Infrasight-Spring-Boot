@@ -30,7 +30,11 @@ public class ServerServiceImpl implements ServerService {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		ServerEntity server = modelMapper.map(createServerModel, ServerEntity.class);
 		server.setPassword(encryptUtil.encrypt(server.getPassword()));
-		serverDao.save(server);
+		UserEntity serverAdmin = accessService.findOneUser(createServerModel.getServerOwnerId());
+		server.setServerAdmin(serverAdmin);
+		ServerEntity addedServer = serverDao.save(server);
+		serverAdmin.getAdminOfServers().add(addedServer);
+		accessService.saveUser(serverAdmin);
 	}
 
 	@Override

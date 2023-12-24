@@ -33,7 +33,7 @@ public class MailingServiceImpl implements MailingService {
 			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
 			mimeMessageHelper.setSubject(mailingModel.getSubject());
-			mimeMessageHelper.setFrom(new InternetAddress(mailConfig.getUsername(), "GMC@3d"));
+			mimeMessageHelper.setFrom(new InternetAddress(mailConfig.getUsername(), "Mail Notification 3d"));
 			mimeMessageHelper.setTo(mailingModel.getTo());
 			mimeMessageHelper.setText(mailingModel.getBody(), true);
 

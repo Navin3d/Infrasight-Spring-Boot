@@ -13,6 +13,8 @@ public class ServerModel implements Serializable {
 
 	private String name;
 
+	private String serverOwnerId;
+	
 	private String description;
 
 	private String host;
