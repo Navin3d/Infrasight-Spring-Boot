@@ -1,6 +1,5 @@
 package gmc.project.infrasight.statscaptureservice.services.impl;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -98,7 +97,7 @@ public class StatsServiceImpl implements StatsService {
 				log.error("ramusedPercentage: {}", ramusedPercentage);
 				log.error("{}) {}: {} - {}", server.getName(), server.getRamLimit(), ((double) (usedRam / totalRam)),
 						cpuUse.toString());
-				LocalDate today = LocalDate.now();
+//				LocalDate today = LocalDate.now();
 //				if(server.getRamLimit() < ramusedPercentage && (server.getLastRamNotificationSent() == null || server.getLastRamNotificationSent().isBefore(today))) {
 				if (server.getRamLimit() < ramusedPercentage) {
 					MailingModel mail = new MailingModel();

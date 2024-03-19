@@ -1,26 +1,21 @@
-package gmc.project.infrasight.statscaptureservice.services.impl;
+package gmc.project.infrasight.statscaptureservice.utils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.springframework.stereotype.Service;
-
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
-import gmc.project.infrasight.statscaptureservice.services.SSHConnectionService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
-public class SSHConnectionServiceImpl implements SSHConnectionService {
+public class SSHConnectionUtils {
 
-	@Override
-	public Session getSession(String host, Integer port, String userName, String password) throws Exception {
+	public static Session getSession(String host, Integer port, String userName, String password) throws Exception {
 		Properties jschConfig = new Properties();
 		jschConfig.put("StrictHostKeyChecking", "no");
 		JSch jsch = new JSch();
@@ -35,8 +30,7 @@ public class SSHConnectionServiceImpl implements SSHConnectionService {
 		return session;
 	}
 
-	@Override
-	public List<String> executeCommand(String command, Session session) {
+	public static List<String> executeCommand(String command, Session session) {
 		Channel channel = null;
 		List<String> response = new ArrayList<>();
 		

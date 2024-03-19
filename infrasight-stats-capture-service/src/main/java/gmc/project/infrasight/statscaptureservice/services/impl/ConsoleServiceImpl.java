@@ -14,8 +14,8 @@ import com.jcraft.jsch.Session;
 import gmc.project.infrasight.statscaptureservice.entities.ServerEntity;
 import gmc.project.infrasight.statscaptureservice.services.ConsoleService;
 import gmc.project.infrasight.statscaptureservice.services.EncryptionService;
-import gmc.project.infrasight.statscaptureservice.services.SSHConnectionService;
 import gmc.project.infrasight.statscaptureservice.services.ServerService;
+import gmc.project.infrasight.statscaptureservice.utils.SSHConnectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -26,8 +26,6 @@ public class ConsoleServiceImpl implements ConsoleService {
 	private ServerService serverService;
 	@Autowired
 	private EncryptionService encryptionService;
-	@Autowired
-	private SSHConnectionService sshService;
 
 	@Override
 	public List<String> executeInServer(String serverId, String command) throws Exception {
@@ -36,8 +34,8 @@ public class ConsoleServiceImpl implements ConsoleService {
 		String username = server.getUsername();
 		String password = encryptionService.decrypt(server.getPassword());
 		Integer port = server.getPort();
-		Session serverSession = sshService.getSession(host, port, username, password);
-		List<String> rawLogs = sshService.executeCommand(command, serverSession);
+		Session serverSession = SSHConnectionUtils.getSession(host, port, username, password);
+		List<String> rawLogs = SSHConnectionUtils.executeCommand(command, serverSession);
 		List<String> returnValue = new ArrayList<>();
 		for(String logTxt: rawLogs) {
 			List<String> doubleBreak = new ArrayList<>();
@@ -54,10 +52,8 @@ public class ConsoleServiceImpl implements ConsoleService {
 	public List<String> extractVulnerabilities(String text) {
         List<String> vulnerabilities = new ArrayList<>();
         
-        String pattern = "^\\s*![^\\n]*";
-        
-        Pattern regexPattern = Pattern.compile(pattern, Pattern.MULTILINE);
-        
+        String pattern = "^\\s*![^\\n]*";        
+        Pattern regexPattern = Pattern.compile(pattern, Pattern.MULTILINE);        
         Matcher matcher = regexPattern.matcher(text);
         
         while (matcher.find()) {
@@ -74,8 +70,8 @@ public class ConsoleServiceImpl implements ConsoleService {
 		String username = server.getUsername();
 		String password = encryptionService.decrypt(server.getPassword());
 		Integer port = server.getPort();
-		Session serverSession = sshService.getSession(host, port, username, password);
-		List<String> rawLogs = sshService.executeCommand("clamscan -r .", serverSession);
+		Session serverSession = SSHConnectionUtils.getSession(host, port, username, password);
+		List<String> rawLogs = SSHConnectionUtils.executeCommand("clamscan -r .", serverSession);
 		List<String> returnValue = Arrays.asList(rawLogs.get(0).split("\n"));
 		log.error("Total {} lines.", returnValue.size());
 		return rawLogs;
